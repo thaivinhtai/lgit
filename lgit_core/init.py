@@ -6,7 +6,7 @@ Functions in this module:
     -   init(path)  ->  create a "lgit repository".
 """
 
-from os import mkdir, environ, getcwd
+from os import mkdir, environ
 from .tools import (get_args, get_full_path, call_subprocess,
                     get_file_type, list_files, add_content_file)
 
