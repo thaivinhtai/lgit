@@ -97,7 +97,7 @@ def list_files(dir):
     """
     try:
         return listdir(get_full_path(dir))
-    except NotADirectoryError:
+    except (NotADirectoryError, FileNotFoundError) as error:
         return []
 
 

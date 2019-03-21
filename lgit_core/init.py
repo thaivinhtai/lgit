@@ -6,7 +6,7 @@ Functions in this module:
     -   init(path)  ->  create a "lgit repository".
 """
 
-from os import mkdir, environ
+from os import mkdir, environ, getcwd
 from .tools import (get_args, get_full_path, call_subprocess,
                     get_file_type, list_files, add_content_file)
 
@@ -30,11 +30,34 @@ def init(path=''):
         path    --  a string that specifies the path will store folder ".lgit",
                     default is current directory.
     """
+
+    def create_unexisted_dir(directory, element):
+        """
+        create_unexisted_dir(directory, element)-> create unexisted directory.
+
+        This function create directory if there are unexisted directory in the
+        path.
+
+        Required argument:
+            directory    --     a full path of directory.
+            element      --     a directory's name.
+        """
+        directory = directory + "/" + element
+        if get_file_type(directory) == 0:
+            mkdir(directory)
+        return directory
+
+    path = path.split("/")
+    path[0] = "/"
+    directory = ""
+    for element in path[1:]:
+        directory = create_unexisted_dir(directory, element)
     folders = ['.lgit', '.lgit/object', '.lgit/commits', '.lgit/snapshots']
 
-    return ([mkdir(path + folder) for folder in folders],
-            add_content_file(".lgit/index"),
-            add_content_file(".lgit/config", environ['LOGNAME'] + '\n'))
+    return ([mkdir(directory + "/" + folder) for folder in folders],
+            add_content_file(directory + "/" + ".lgit/index"),
+            add_content_file(directory + "/" + ".lgit/config",
+                             environ['LOGNAME'] + '\n'))
 
 
 def execute_init():
@@ -57,7 +80,7 @@ def execute_init():
                      get_full_path(args[0]) + "/.lgit/")
 
     if get_file_type(args[0]) != "file":
-        print("Initialized empty legalit repository in",
+        print("Initialized empty Lgit repository in",
               get_full_path(args[0]) + "/.lgit/")
-        return init(args[0] + "/")
+        return init(get_full_path(args[0]))
     return print("fatal: cannot mkdir", args[0], ": File exists")
