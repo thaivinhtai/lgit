@@ -69,16 +69,17 @@ def execute_init():
     args = get_args()[2:]
     if not args:
         args.append('.')
-
+    # If there are more than one argument
     if len(args) > 1 or "-h" in args:
         return print("usage: git init [<directory>]")
+    # If there is "--help" in arguments
     if "--help" in args:
         return call_subprocess('./lgit-docs/Manual page lgit-init(1)')
-
+    # If there is already have .lgit in directory
     if ".lgit" in list_files(args[0]):
         return print("Reinitialized existing Lgit repository in",
                      get_full_path(args[0]) + "/.lgit/")
-
+    # Create .lgit
     if get_file_type(args[0]) != "file":
         print("Initialized empty Lgit repository in",
               get_full_path(args[0]) + "/.lgit/")
