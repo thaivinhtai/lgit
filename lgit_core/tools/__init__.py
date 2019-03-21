@@ -2,4 +2,4 @@
 Python package. This module also contain some stuff to help the project easier
 to develop."""
 
-from os import *
+from .tools import *
