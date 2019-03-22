@@ -63,12 +63,15 @@ def read_file(file):
     Required argument:
         file    --  name or path of file.
     """
-    file = get_full_path(file)
-    file = open(file, O_RDWR)
-    file = fdopen(file)
-    content = file.read()
-    file.close()
-    return content
+    try:
+        file = get_full_path(file)
+        file = open(file, O_RDWR)
+        file = fdopen(file)
+        content = file.read()
+        file.close()
+        return content
+    except (UnicodeDecodeError, PermissionError) as error:
+        return ""
 
 
 def print_file(file):

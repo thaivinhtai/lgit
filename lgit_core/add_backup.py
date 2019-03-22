@@ -4,8 +4,8 @@ copy of the file content in the lgit database.
 File contents will be stored in the lgit database with thier SHA hash value.
 """
 
-from os.path import exists, join
-from os import mkdir, walk
+from os.path import exists
+from os import mkdir
 from .tools import (get_args, get_full_path, call_subprocess,
                     get_file_type, list_files, add_content_file,
                     get_hash, read_file)
@@ -32,44 +32,56 @@ def add(file, objects_path):
             file_content    --  content of file.
         """
         objects_folder = objects_path + ".lgit/objects/" + folder
+        # print(objects_folder)
         if not exists(objects_folder):
             mkdir(objects_folder)
         return add_content_file(objects_folder + "/" + file_name, file_content)
 
-    def create_object_file(file):
+    def add_recursion(files):
         """
-        create_object_file(file)    -> create file in objects directoy.
+        add_recursion(list_file)    ->  recur the function add.
 
         Required argument:
-            file    --  file name.
+            list_file   -> list of files.
+        """
+        # print(files)
+        for file in files:
+            # print(get_full_path(file))
+            add(get_full_path(file), objects_path)
+        return 0
+
+    def skip_repo(file):
+        """
+        skip_repo(file)   ->  remove ".lgit" in list.
+
+        This function check if there are repository in a directoy, skip it.
+
+        Required aegument:
+            file    -- a directory's name.
+        """
+        files = list(list_files(file))
+        if ".lgit" in files:
+            files.remove(".lgit")
+        return files
+
+    def create_object_file():
+        """
+        create_object_file()    -> create file in objects directoy.
         """
         folder = get_hash(get_full_path(file))[0:2]
         file_name = get_hash(get_full_path(file))[2:]
         file_content = read_file(get_full_path(file))
         create_file(folder, file_name, file_content)
 
-    def get_all_file(directory):
-        """
-        get_all_file(directory)  ->  find all the file in dir and subdir.
-
-        This function return a list of all path of files in the dirctory and
-        its children.
-
-        Required argument:
-            directory   -- path of directory
-        """
-        files_list = []
-        for dir, subdir, files in walk(directory):
-            files_list.extend([join(dir, file) for file in files])
-        return files_list
-
     # Check if file is directoy or a plain file
     if get_file_type(file) == "file":
-        return create_object_file(file)
+        # print(file)
+        return create_object_file()
     if get_file_type(file) == "directory":
-        files_list = get_all_file(get_full_path(file))
-        return [create_object_file(file) for file in files_list]
-
+        files = list(skip_repo(file))
+        print(file)
+        print(files)
+        return add_recursion(files)
 
 
 def execute_add(objects_path):
