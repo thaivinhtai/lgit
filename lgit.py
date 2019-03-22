@@ -7,6 +7,52 @@ from lgit_core import (execute_init, execute_add)
 from lgit_core.tools import get_args, list_files
 
 
+def find_repo():
+    """
+    find_repo() -> find lgit repository.
+    """
+
+    def check_path(folder, track):
+        """
+        check_path(folder, track) ->  check the current current directory.
+
+        This function check if are there an lgit repository in the path.
+
+        Required argument:
+            folder  --  current dir pathspec.
+            track   --  current dir's name.
+        """
+        repo = ""
+        if ".lgit" in list_files(track):
+            repo = track
+        return repo
+
+    current_dir = getcwd().split("/")
+    current_dir.remove('')
+    repo = ""
+    track = ""
+    for element in current_dir:
+        track = track + "/" + element
+        repo = check_path(element, track)
+    return repo + "/"
+
+
+def call_init():
+    """
+    call_init() -> execute the lgit init command.
+    """
+    return execute_init()
+
+
+def call_add():
+    """
+    call_add()  -> execute the lgit add command and handle some error.
+    """
+    if find_repo() != "/":
+        return execute_add(find_repo())
+
+
+
 def switch_command(command):
     """
     switch_command(command) ->  choose a command.
@@ -18,8 +64,8 @@ def switch_command(command):
     """
 
     switcher = {
-        'init': execute_init,
-        'add': execute_add
+        'init': call_init,
+        'add': call_add
     }
     func = switcher.get(command, None)
     return func()
@@ -32,19 +78,8 @@ def main():
     args = list(get_args())
     if len(args) > 1:
         args.remove(args[0])
-    if args[0] == "init":
-        return switch_command(args[0])
-    current_dir = getcwd().split("/")
-    repo = ""
-    track = ""
-    for element in current_dir:
-        track = track + "/" + element
-        if ".lgit" in list_files(track):
-            repo = track
-    if repo != "":
-        if args[0] == "add":
-            execute_add(repo)
-    print(current_dir)
+    args = args[0]
+    switch_command(args)
 
 
 if __name__ == "__main__":

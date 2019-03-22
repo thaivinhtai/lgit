@@ -31,30 +31,58 @@ def add(file, objects_path):
             file_name       --  file's name.
             file_content    --  content of file.
         """
-        objects_folder = objects_path + folder
+        objects_folder = objects_path + ".lgit/objects/" + folder
+        print(objects_folder)
         if not exists(objects_folder):
             mkdir(objects_folder)
         return add_content_file(objects_folder + "/" + file_name, file_content)
 
-    def add_recursion(list_file):
+    def add_recursion(files):
         """
         add_recursion(list_file)    ->  recur the function add.
 
         Required argument:
             list_file   -> list of files.
         """
-        for element in list_file:
+        print(files)
+        for element in files:
+            print(get_full_path(element))
             add(element, objects_path)
         return 0
 
-    # Check if file is directoy or a plain file
-    if get_file_type(file) == "file":
+    def skip_repo(file):
+        """
+        skip_repo(file)   ->  remove ".lgit" in list.
+
+        This function check if there are repository in a directoy, skip it.
+
+        Required aegument:
+            file    -- a directory's name.
+        """
+        files = list_files(file)
+        # print(files)
+        if ".lgit" in files:
+            files.remove(".lgit")
+        # print(files)
+        return files
+
+    def create_object_file():
+        """
+        create_object_file()    -> create file in objects directoy.
+        """
         folder = get_hash(get_full_path(file))[0:2]
         file_name = get_hash(get_full_path(file))[2:]
         file_content = read_file(get_full_path(file))
-        return create_file(folder, file_name, file_content)
+        create_file(folder, file_name, file_content)
+
+    # Check if file is directoy or a plain file
+    if get_file_type(file) == "file":
+        print(file)
+        create_object_file()
     if get_file_type(file) == "directory":
-        return add_recursion(list_files(file))
+        files = skip_repo(file)
+        print(files)
+        add_recursion(files)
 
 
 def execute_add(objects_path):
