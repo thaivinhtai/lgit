@@ -39,8 +39,11 @@ def main():
     track = ""
     for element in current_dir:
         track = track + "/" + element
-
-    return switch_command(args[0])
+        if ".lgit" in list_files(track):
+            repo = track
+    if repo != "":
+        if args[0] == "add":
+            execute_add(repo)
     print(current_dir)
 
 
