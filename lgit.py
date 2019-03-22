@@ -14,13 +14,13 @@ def find_repo():
 
     def check_path(folder, track):
         """
-        check_path(folder, track) ->  check the current current directory.
+        check_path(folder, track) ->  check the current directory.
 
-        This function check if are there an lgit repository in the path.
+        This function check if there is a lgit repository in the path.
 
         Required argument:
-            folder  --  current dir pathspec.
-            track   --  current dir's name.
+            folder  --  current directory's name.
+            track   --  current directory pathspec.
         """
         repo = ""
         if ".lgit" in list_files(track):
@@ -32,7 +32,7 @@ def find_repo():
     repo = ""
     track = ""
     for element in current_dir:
-        track = track + "/" + element
+        track += "/" + element
         repo = check_path(element, track)
     return repo + "/"
 
