@@ -4,16 +4,19 @@ program.
 Functions in this module:
     -   get_full_path(file) -> return full path of file.
     -   get_file_type(file) -> return type of file.
+    -   read_file(file) ->  return content of a file.
     -   print_file(file)    -> print the content of file to console.
     -   get_args()  -> return a list of arguments.
     -   call_subprocess(option, subprocess) -> call the subprocess.
     -   list_dir(dir)   ->  return all files in a directory.
     -   add_content_file(name, content)  -> add content to a file.
+    -   hash_file(file) -> hash file.
 """
 
 from os import path, open, close, write, O_RDWR, O_CREAT, fdopen, listdir
 from sys import argv
 from subprocess import run
+from hashlib import sha1
 
 
 def get_full_path(file):
@@ -47,10 +50,25 @@ def get_file_type(file):
         if path.isfile(file):
             return "file"
         if path.isdir(file):
-            return "dir"
+            return "directory"
         return 0
     except FileNotFoundError:
         return None
+
+
+def read_file(file):
+    """
+    read_file(file)     ->  get content of a file.
+
+    Required argument:
+        file    --  name or path of file.
+    """
+    file = get_full_path(file)
+    file = open(file, O_RDWR)
+    file = fdopen(file)
+    content = file.read()
+    file.close()
+    return content
 
 
 def print_file(file):
@@ -60,11 +78,7 @@ def print_file(file):
     Required argument:
         file    -> name of file need to print content.
     """
-    file = get_full_path(file)
-    file = open(file, O_RDWR)
-    file = fdopen(file)
-    content = file.read()
-    file.close()
+    content = read_file(file)
     return print(content)
 
 
@@ -115,3 +129,16 @@ def add_content_file(name, content=""):
     byte_object = str.encode(content)
     ret = write(file_descriptor, byte_object)
     return close(file_descriptor)
+
+
+def get_hash(file):
+    """
+    get_hash(file)  -> return hash value of file.
+
+    This function return SHA1 hash value of file.
+
+    Required argument:
+        file    --  a file need to be hashed.
+    """
+    content = read_file(file)
+    return sha1(content.encode()).hexdigest()

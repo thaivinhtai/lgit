@@ -52,7 +52,7 @@ def init(path=''):
     directory = ""
     for element in path[1:]:
         directory = create_unexisted_dir(directory, element)
-    folders = ['.lgit', '.lgit/object', '.lgit/commits', '.lgit/snapshots']
+    folders = ['.lgit', '.lgit/objects', '.lgit/commits', '.lgit/snapshots']
 
     return ([mkdir(directory + "/" + folder) for folder in folders],
             add_content_file(directory + "/" + ".lgit/index"),
@@ -76,12 +76,13 @@ def execute_init():
     if "--help" in args:
         return call_subprocess('./lgit-docs/Manual page lgit-init(1)')
     # If there is already have .lgit in directory
-    if ".lgit" in list_files(args[0]):
+    if ".lgit" in list_files(get_full_path(args[0])):
         return print("Reinitialized existing Lgit repository in",
                      get_full_path(args[0]) + "/.lgit/")
     # Create .lgit
-    if get_file_type(args[0]) != "file":
+    if get_file_type(get_full_path(args[0])) != "file":
         print("Initialized empty Lgit repository in",
               get_full_path(args[0]) + "/.lgit/")
-        return init(get_full_path(args[0]))
+        init(get_full_path(args[0]))
+        return get_full_path(args[0]) + "/.lgit/objects/"
     return print("fatal: cannot mkdir", args[0], ": File exists")
