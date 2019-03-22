@@ -69,7 +69,7 @@ def execute_init():
     # path of manual of init.
     doc = '/lgit-docs/Manual page lgit-init(1)'
     current_dir = get_args()[0][:len(get_args()[0]) - 8]
-    args = get_args()[2:]
+    args = list(get_args()[2:])
     if not args:
         args.append('.')
     # If there are more than one argument

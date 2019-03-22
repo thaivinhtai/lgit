@@ -83,7 +83,7 @@ def execute_add(objects_path):
 
     doc = '/lgit-docs/Manual page lgit-add(1)'
     current_dir = get_args()[0][:len(get_args()[0]) - 8]
-    args = get_args()[2:]
+    args = list(get_args()[2:])
 
     if not args:
         return print("Nothing specified, nothing added.",

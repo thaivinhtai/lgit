@@ -29,9 +29,18 @@ def main():
     """
     This is main function.
     """
-    args = get_args()[1:]
+    args = list(get_args())
+    if len(args) > 1:
+        args.remove(args[0])
+    if args[0] == "init":
+        return switch_command(args[0])
     current_dir = getcwd().split("/")
-    current_dir[0] = "/"
+    repo = ""
+    track = ""
+    for element in current_dir:
+        track = track + "/" + element
+
+    return switch_command(args[0])
     print(current_dir)
 
 
