@@ -66,6 +66,9 @@ def execute_init():
 
     Execute the function of this module with except handling.
     """
+    # path of manual of init.
+    doc = '/lgit-docs/Manual page lgit-init(1)'
+    current_dir = get_args()[0][:len(get_args()[0]) - 8]
     args = get_args()[2:]
     if not args:
         args.append('.')
@@ -74,7 +77,7 @@ def execute_init():
         return print("usage: git init [<directory>]")
     # If there is "--help" in arguments
     if "--help" in args:
-        return call_subprocess('./lgit-docs/Manual page lgit-init(1)')
+        return call_subprocess(current_dir + doc)
     # If there is already have .lgit in directory
     if ".lgit" in list_files(get_full_path(args[0])):
         return print("Reinitialized existing Lgit repository in",

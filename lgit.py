@@ -2,7 +2,38 @@
 
 """This is main module of Lgit program, which is a simple simulation of git."""
 
-from lgit_core import execute_init
+from os import getcwd
+from lgit_core import (execute_init, execute_add)
+from lgit_core.tools import get_args, list_files
 
 
-execute_init()
+def switch_command(command):
+    """
+    switch_command(command) ->  choose a command.
+
+    This is a manual swithcer for select function quickly.
+
+    Required arguments:
+        command     --  a string-type, which is name of command.
+    """
+
+    switcher = {
+        'init': execute_init,
+        'add': execute_add
+    }
+    func = switcher.get(command, None)
+    return func()
+
+
+def main():
+    """
+    This is main function.
+    """
+    args = get_args()[1:]
+    current_dir = getcwd().split("/")
+    current_dir[0] = "/"
+    print(current_dir)
+
+
+if __name__ == "__main__":
+    main()

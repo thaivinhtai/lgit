@@ -99,6 +99,7 @@ def call_subprocess(file, subprocess='less'):
         - file          -- file want to open in subprocess.
         - subprocess    -- name of process, defaul is less.
     """
+    file = get_full_path(file)
     return run([subprocess, file])
 
 

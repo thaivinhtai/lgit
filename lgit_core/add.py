@@ -44,7 +44,7 @@ def add(file, objects_path):
             list_file   -> list of files.
         """
         for element in list_file:
-            add(element, object_path)
+            add(element, objects_path)
         return 0
 
     # Check if file is directoy or a plain file
@@ -53,14 +53,50 @@ def add(file, objects_path):
         file_name = get_hash(get_full_path(file))[2:]
         file_content = read_file(get_full_path(file))
         return create_file(folder, file_name, file_content)
-    elif get_file_type(file) == "directory":
+    if get_file_type(file) == "directory":
         return add_recursion(list_files(file))
 
 
-def execute_add():
+def execute_add(objects_path):
     """
     execute_add()   -> execute lgit add command, this is main of this module.
 
     Execute function of this module with error handling.
     """
-    
+
+    def check_arg(args):
+        """
+        check_arg(args) ->  check all argument in args.
+
+        This function check all argument in args (list of arguments), if there
+        is an unvalid argument, return False.
+
+        Required argument:
+            args    --  list of arguments.
+        """
+        index = 0
+        for element in args:
+            index += 1
+            if not exists(get_full_path(element)):
+                return index, False
+        return index, True
+
+    doc = '/lgit-docs/Manual page lgit-add(1)'
+    current_dir = get_args()[0][:len(get_args()[0]) - 8]
+    args = get_args()[2:]
+
+    if not args:
+        return print("Nothing specified, nothing added.",
+                     "Maybe you wanted to say 'lgit add .'?", sep='\n')
+    if args[0] == "--help":
+        return call_subprocess(current_dir + doc)
+    if "-help" in args or "--help" in args:
+        return print("usage: git add <pathspec>")
+
+    index, check = check_arg(args)
+    if check is False:
+        return print("fatal: pathspec '" + args[index] + "' did not",
+                     "match any files")
+    for element in args:
+        add(get_full_path(element), objects_path)
+    return 0
