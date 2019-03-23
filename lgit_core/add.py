@@ -11,12 +11,13 @@ from .tools import (get_args, get_full_path, call_subprocess,
                     get_hash, read_file)
 
 
-def add(file, objects_path):
+def add(file, repo_path):
     """
     add(file)   ->  store a copy of the file content in the lgit database.
 
     Required argument:
-        file    ->  a file's path specification.
+        file        --  a file's path specification.
+        repo_path   --  path of lgit repo.
     """
 
     def create_file(folder, file_name, file_content):
@@ -31,7 +32,7 @@ def add(file, objects_path):
             file_name       --  file's name.
             file_content    --  content of file.
         """
-        objects_folder = objects_path + ".lgit/objects/" + folder
+        objects_folder = repo_path + ".lgit/objects/" + folder
         if not exists(objects_folder):
             mkdir(objects_folder)
         return add_content_file(objects_folder + "/" + file_name, file_content)
@@ -61,6 +62,7 @@ def add(file, objects_path):
         files_list = []
         for dir, subdir, files in walk(directory):
             files_list.extend([join(dir, file) for file in files])
+        files_list = filter(lambda x: not '/.lgit' in x, files_list)
         return files_list
 
     # Check if file is directoy or a plain file
@@ -72,14 +74,17 @@ def add(file, objects_path):
 
 
 
-def execute_add(objects_path):
+def execute_add(repo_path):
     """
     execute_add()   -> execute lgit add command, this is main of this module.
 
     Execute function of this module with error handling.
+
+    required argument:
+        repo_path   --  path of lgit repository.
     """
 
-    def check_arg(args):
+    def check_arg(args, repo_path):
         """
         check_arg(args) ->  check all argument in args.
 
@@ -87,14 +92,21 @@ def execute_add(objects_path):
         is an unvalid argument, return False.
 
         Required argument:
-            args    --  list of arguments.
+            args        --  list of arguments.
+            repo_path   --  path of lgit repository.
         """
-        index = 0
+        split_repo_path = repo_path.split("/")
+        del split_repo_path[-1]
+        index = -1
         for element in args:
             index += 1
+            split_element = get_full_path(element).split("/")
+            split_element.remove(split_element[-1])
+            if str(split_repo_path) not in str(split_element):
+                return index, False, 2
             if not exists(get_full_path(element)):
-                return index, False
-        return index, True
+                return index, False, 1
+        return index, True, 0
 
     doc = '/lgit-docs/Manual page lgit-add(1)'
     current_dir = get_args()[0][:len(get_args()[0]) - 8]
@@ -103,15 +115,19 @@ def execute_add(objects_path):
     if not args:
         return print("Nothing specified, nothing added.",
                      "Maybe you wanted to say 'lgit add .'?", sep='\n')
+
     if args[0] == "--help":
         return call_subprocess(current_dir + doc)
     if "-help" in args or "--help" in args:
         return print("usage: git add <pathspec>")
 
-    index, check = check_arg(args)
-    if check is False:
+    index, check, error = check_arg(args, repo_path)
+    if check is False and error == 1:
         return print("fatal: pathspec '" + args[index] + "' did not",
                      "match any files")
+    if check is False and error == 2:
+        return print("fatal:", args[index] + ":", "'" + args[index] + "'",
+                     "is outside repository")
     for element in args:
-        add(get_full_path(element), objects_path)
+        add(get_full_path(element), repo_path)
     return 0

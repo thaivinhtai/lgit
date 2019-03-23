@@ -50,7 +50,8 @@ def call_add():
     """
     if find_repo() != "/":
         return execute_add(find_repo())
-
+    return print("fatal: not a git repository",
+                 "(or any of the parent directories)")
 
 
 def switch_command(command):
