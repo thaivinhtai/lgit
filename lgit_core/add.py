@@ -7,7 +7,7 @@ File contents will be stored in the lgit database with thier SHA hash value.
 from os.path import exists, join
 from os import mkdir, walk
 from .tools import (get_args, get_full_path, call_subprocess,
-                    get_file_type, list_files, add_content_file,
+                    get_file_type, add_content_file,
                     get_hash, read_file)
 
 
@@ -60,9 +60,10 @@ def add(file, repo_path):
             directory   -- path of directory
         """
         files_list = []
-        for dir, subdir, files in walk(directory):
-            files_list.extend([join(dir, file) for file in files])
-        files_list = filter(lambda x: not '/.lgit' in x, files_list)
+        for direc, subdir, files in walk(directory):
+            del subdir
+            files_list.extend([join(direc, file) for file in files])
+        files_list = filter(lambda data: '/.lgit' not in data, files_list)
         return files_list
 
     # Check if file is directoy or a plain file
@@ -71,7 +72,6 @@ def add(file, repo_path):
     if get_file_type(file) == "directory":
         files_list = get_all_file(get_full_path(file))
         return [create_object_file(file) for file in files_list]
-
 
 
 def execute_add(repo_path):

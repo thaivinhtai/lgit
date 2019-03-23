@@ -4,7 +4,7 @@
 
 from os import getcwd
 from lgit_core import (execute_init, execute_add)
-from lgit_core.tools import get_args, list_files
+from lgit_core.tools import get_args, list_files, print_file
 
 
 def find_repo():
@@ -12,14 +12,13 @@ def find_repo():
     find_repo() -> find lgit repository.
     """
 
-    def check_path(folder, track):
+    def check_path(track):
         """
         check_path(folder, track) ->  check the current directory.
 
         This function check if there is a lgit repository in the path.
 
         Required argument:
-            folder  --  current directory's name.
             track   --  current directory pathspec.
         """
         repo = ""
@@ -33,7 +32,7 @@ def find_repo():
     track = ""
     for element in current_dir:
         track += "/" + element
-        repo = check_path(element, track)
+        repo = check_path(track)
     return repo + "/"
 
 
@@ -68,19 +67,25 @@ def switch_command(command):
         'init': call_init,
         'add': call_add
     }
-    func = switcher.get(command, None)
-    return func()
+    try:
+        func = switcher.get(command, None)
+        return func()
+    except TypeError:
+        print("lgit: '" + command + "' is not a lgit command.",
+              "See 'lgit --help'.")
 
 
 def main():
     """
     This is main function.
     """
-    args = list(get_args())
-    if len(args) > 1:
-        args.remove(args[0])
-    args = args[0]
-    switch_command(args)
+    try:
+        command = get_args()[1]
+        return switch_command(command)
+    except IndexError:
+        current_dir = get_args()[0][:len(get_args()[0]) - 8]
+        doc = '/lgit-docs/lgit-help'
+        print_file(current_dir + doc)
 
 
 if __name__ == "__main__":
