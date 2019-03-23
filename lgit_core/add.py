@@ -97,12 +97,12 @@ def execute_add(repo_path):
         """
         split_repo_path = repo_path.split("/")
         del split_repo_path[-1]
+        str_repo = str(split_repo_path)[:len(split_repo_path) - 1]
         index = -1
         for element in args:
             index += 1
             split_element = get_full_path(element).split("/")
-            split_element.remove(split_element[-1])
-            if str(split_repo_path) not in str(split_element):
+            if str_repo not in str(split_element):
                 return index, False, 2
             if not exists(get_full_path(element)):
                 return index, False, 1

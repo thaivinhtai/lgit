@@ -11,7 +11,7 @@ from .tools import (get_args, get_full_path, call_subprocess,
                     get_file_type, list_files, add_content_file)
 
 
-def init(path=''):
+def init(path):
     """
     init(path)  ->  create a "lgit repository".
 
@@ -26,9 +26,8 @@ def init(path=''):
         -   a file "config" will store the name of the author, initialised from
             the environment variable LOGNAME
 
-    Optional argument:
-        path    --  a string that specifies the path will store folder ".lgit",
-                    default is current directory.
+    Required argument:
+        path    --  a string that specifies the path will store folder ".lgit".
     """
 
     def create_unexisted_dir(directory, element):
@@ -42,7 +41,7 @@ def init(path=''):
             directory    --     a full path of directory.
             element      --     a directory's name.
         """
-        directory = directory + "/" + element
+        directory += "/" + element
         if get_file_type(directory) == 0:
             mkdir(directory)
         return directory
@@ -55,8 +54,8 @@ def init(path=''):
     folders = ['.lgit', '.lgit/objects', '.lgit/commits', '.lgit/snapshots']
 
     return ([mkdir(directory + "/" + folder) for folder in folders],
-            add_content_file(directory + "/" + ".lgit/index"),
-            add_content_file(directory + "/" + ".lgit/config",
+            add_content_file(directory + "/.lgit/index"),
+            add_content_file(directory + "/.lgit/config",
                              environ['LOGNAME'] + '\n'))
 
 

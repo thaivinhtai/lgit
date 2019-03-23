@@ -11,9 +11,11 @@ Functions in this module:
     -   list_dir(dir)   ->  return all files in a directory.
     -   add_content_file(name, content)  -> add content to a file.
     -   hash_file(file) -> hash file.
+    -   get_timestamp(file) -> return timestamp of file.
 """
 
 from os import path, open, close, write, O_RDWR, O_CREAT, fdopen, listdir
+from time import strftime, localtime
 from sys import argv
 from subprocess import run
 from hashlib import sha1
@@ -146,3 +148,19 @@ def get_hash(file):
     """
     content = read_file(file)
     return sha1(content.encode()).hexdigest()
+
+
+def get_timestamp(file):
+    """
+    get_timestamp(file) ->  return timestamp of file.
+
+    This function returns timestamp of file via a string.
+
+    Required argument:
+        file    --  file's name.
+    """
+    file = get_full_path(file)
+    mod_time_since_epoc = path.getmtime(file)
+    modification_time = strtime('%Y%m%d%H%M%S',
+                                localtime(mod_time_since_epoc))
+    return modification_time
