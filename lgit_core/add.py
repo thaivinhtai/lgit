@@ -95,14 +95,10 @@ def execute_add(repo_path):
             args        --  list of arguments.
             repo_path   --  path of lgit repository.
         """
-        split_repo_path = repo_path.split("/")
-        del split_repo_path[-1]
-        str_repo = str(split_repo_path)[:len(split_repo_path) - 1]
         index = -1
         for element in args:
             index += 1
-            split_element = get_full_path(element).split("/")
-            if str_repo not in str(split_element):
+            if repo_path not in get_full_path(element):
                 return index, False, 2
             if not exists(get_full_path(element)):
                 return index, False, 1
