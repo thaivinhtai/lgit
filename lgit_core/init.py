@@ -85,6 +85,5 @@ def execute_init():
     if get_file_type(get_full_path(args[0])) != "file":
         print("Initialized empty Lgit repository in",
               get_full_path(args[0]) + "/.lgit/")
-        init(get_full_path(args[0]))
-        return get_full_path(args[0]) + "/.lgit/objects/"
+        return init(get_full_path(args[0]))
     return print("fatal: cannot mkdir", args[0], ": File exists")
