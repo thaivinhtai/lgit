@@ -6,9 +6,8 @@ File contents will be stored in the lgit database with thier SHA hash value.
 
 from os.path import exists, join
 from os import mkdir, walk
-from .tools import (get_args, get_full_path, call_subprocess,
-                    get_file_type, add_content_file,
-                    get_hash, read_file)
+from .tools import (get_args, get_full_path, call_subprocess, get_file_type,
+                    add_content_file, get_hash, read_file, get_timestamp)
 
 
 def add(file, repo_path):

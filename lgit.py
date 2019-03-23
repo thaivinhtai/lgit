@@ -12,7 +12,7 @@ def find_repo():
     find_repo() -> find lgit repository.
     """
 
-    def check_path(track):
+    def check_path(track, repo):
         """
         check_path(folder, track) ->  check the current directory.
 
@@ -20,8 +20,8 @@ def find_repo():
 
         Required argument:
             track   --  current directory pathspec.
+            repo    --  folder contain .lgit.
         """
-        repo = ""
         if ".lgit" in list_files(track):
             repo = track
         return repo
@@ -32,7 +32,7 @@ def find_repo():
     track = ""
     for element in current_dir:
         track += "/" + element
-        repo = check_path(track)
+        repo = check_path(track, repo)
     return repo + "/"
 
 
