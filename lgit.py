@@ -33,7 +33,7 @@ def find_repo():
     for element in current_dir:
         track += "/" + element
         repo = check_path(track, repo)
-    return repo + "/"
+    return repo
 
 
 def call_init():
@@ -47,7 +47,7 @@ def call_add():
     """
     call_add()  -> execute the lgit add command and handle some error.
     """
-    if find_repo() != "/":
+    if find_repo() != "":
         return execute_add(find_repo())
     return print("fatal: not a git repository",
                  "(or any of the parent directories)")

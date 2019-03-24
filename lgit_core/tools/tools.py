@@ -5,6 +5,7 @@ Functions in this module:
     -   get_full_path(file) -> return full path of file.
     -   get_file_type(file) -> return type of file.
     -   read_file(file) ->  return content of a file.
+    -   open_file(file) ->  open a file to read and write.
     -   print_file(file)    -> print the content of file to console.
     -   get_args()  -> return a list of arguments.
     -   call_subprocess(option, subprocess) -> call the subprocess.
@@ -58,6 +59,24 @@ def get_file_type(file):
         return None
 
 
+def open_file(file):
+    """
+    open_file(file) ->  open a file for reading and writing.
+
+    This function returns a file object.
+
+    Required argument:
+        file    --  file' name.
+    """
+    try:
+        file = get_full_path(file)
+        file = open(file, O_RDWR)
+        file = fdopen(file)
+        return file
+    except PermissionError:
+        return None
+
+
 def read_file(file):
     """
     read_file(file)     ->  get content of a file.
@@ -66,13 +85,11 @@ def read_file(file):
         file    --  name or path of file.
     """
     try:
-        file = get_full_path(file)
-        file = open(file, O_RDWR)
-        file = fdopen(file)
+        file = open_file(file)
         content = file.read()
         file.close()
         return content
-    except (UnicodeDecodeError, PermissionError) as error:
+    except (UnicodeDecodeError, PermissionError, AttributeError) as errors:
         return ""
 
 
@@ -161,6 +178,6 @@ def get_timestamp(file):
     """
     file = get_full_path(file)
     mod_time_since_epoc = path.getmtime(file)
-    modification_time = strtime('%Y%m%d%H%M%S',
+    modification_time = strftime('%Y%m%d%H%M%S',
                                 localtime(mod_time_since_epoc))
     return modification_time

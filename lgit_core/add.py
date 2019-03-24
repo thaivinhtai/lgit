@@ -7,7 +7,59 @@ File contents will be stored in the lgit database with thier SHA hash value.
 from os.path import exists, join
 from os import mkdir, walk
 from .tools import (get_args, get_full_path, call_subprocess, get_file_type,
-                    add_content_file, get_hash, read_file, get_timestamp)
+                    add_content_file, get_hash, read_file, get_timestamp,
+                    open_file)
+
+
+def register_to_index(file, repo, hash):
+    """
+    register_to_index(file) ->  register to index file in lgit database.
+
+    Required argument:
+        file    --  file name.
+        repo    --  the folder contain lgit database.
+        hash    --  a hash value for register in index file.
+    """
+
+    def check_index(path_file, index_content):
+        """
+        check_index(path_file, index_content) -> check if file had registred.
+
+        This function check a file had already in index or not. Return False
+        if not, else return True and line index contain file.
+
+        Required argument:
+            path_file       --  path of file.
+            index_content   --  content of index file.
+        """
+        registered = False
+        index = -1
+        for line in index_content:
+            index += 1
+            if path_file in line:
+                registered = True
+                break
+        return registered, index
+
+
+    full_path_file = get_full_path(file)
+    file_timestamp = get_timestamp(file)
+    path_file = full_path_file.replace(repo + "/", '')
+    index_content = read_file(repo + "/.lgit/index").split('\n')
+    if len(index_content) == 1 and index_content[0] == '':
+        index_content = []
+    registerd, index = check_index(path_file, index_content)
+    if not registerd:
+        index_content.append(file_timestamp + " " + hash + " " +
+                             hash + " " * 42 + path_file)
+    else:
+        index_content[index].replace(index_content[index][:106],
+                                     (file_timestamp + " " + hash +
+                                      " " + hash))
+    content_to_write = ""
+    for element in index_content:
+        content_to_write += element + "\n"
+    return add_content_file(repo + "/.lgit/index", content_to_write)
 
 
 def add(file, repo_path):
@@ -31,7 +83,7 @@ def add(file, repo_path):
             file_name       --  file's name.
             file_content    --  content of file.
         """
-        objects_folder = repo_path + ".lgit/objects/" + folder
+        objects_folder = repo_path + "/.lgit/objects/" + folder
         if not exists(objects_folder):
             mkdir(objects_folder)
         return add_content_file(objects_folder + "/" + file_name, file_content)
@@ -43,10 +95,13 @@ def add(file, repo_path):
         Required argument:
             file    --  file name.
         """
-        folder = get_hash(get_full_path(file))[0:2]
-        file_name = get_hash(get_full_path(file))[2:]
+        hash_value = get_hash(get_full_path(file))
+        folder = hash_value[0:2]
+        file_name = hash_value[2:]
         file_content = read_file(get_full_path(file))
-        create_file(folder, file_name, file_content)
+        register_to_index(file, repo_path, hash_value)
+        return create_file(folder, file_name, file_content)
+
 
     def get_all_file(directory):
         """
@@ -95,6 +150,7 @@ def execute_add(repo_path):
             repo_path   --  path of lgit repository.
         """
         index = -1
+        print(repo_path)
         for element in args:
             index += 1
             if repo_path not in get_full_path(element):
