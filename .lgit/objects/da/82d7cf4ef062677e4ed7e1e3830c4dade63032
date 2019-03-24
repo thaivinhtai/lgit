@@ -41,6 +41,7 @@ def register_to_index(file, repo, hash_value):
                 break
         return registered, index
 
+
     full_path_file = get_full_path(file)
     file_timestamp = get_timestamp(file)
     path_file = full_path_file.replace(repo + "/", '')

@@ -128,15 +128,15 @@ def call_subprocess(file, subprocess='less'):
     return run([subprocess, file])
 
 
-def list_files(directoy):
+def list_files(dir):
     """
     list_dir(dir)   ->  return all files in a directory.
 
     Required argument:
-        directoy     -- name of directory.
+        dir     -- name of directory.
     """
     try:
-        return listdir(get_full_path(directoy))
+        return listdir(get_full_path(dir))
     except (NotADirectoryError, FileNotFoundError) as error:
         del error
         return []

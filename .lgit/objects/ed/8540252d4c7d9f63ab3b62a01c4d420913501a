@@ -92,7 +92,6 @@ def read_file(file):
         file.close()
         return content
     except (UnicodeDecodeError, PermissionError, AttributeError) as errors:
-        del errors
         return ""
 
 
@@ -128,17 +127,16 @@ def call_subprocess(file, subprocess='less'):
     return run([subprocess, file])
 
 
-def list_files(directoy):
+def list_files(dir):
     """
     list_dir(dir)   ->  return all files in a directory.
 
     Required argument:
-        directoy     -- name of directory.
+        dir     -- name of directory.
     """
     try:
-        return listdir(get_full_path(directoy))
+        return listdir(get_full_path(dir))
     except (NotADirectoryError, FileNotFoundError) as error:
-        del error
         return []
 
 
@@ -154,7 +152,7 @@ def add_content_file(name, content=""):
     """
     file_descriptor = open(name, O_RDWR | O_CREAT, 0o644)
     byte_object = str.encode(content)
-    write(file_descriptor, byte_object)
+    ret = write(file_descriptor, byte_object)
     return close(file_descriptor)
 
 
@@ -183,7 +181,7 @@ def get_timestamp(file):
     file = get_full_path(file)
     mod_time_since_epoc = path.getmtime(file)
     modification_time = strftime('%Y%m%d%H%M%S',
-                                 localtime(mod_time_since_epoc))
+                                localtime(mod_time_since_epoc))
     return modification_time
 
 

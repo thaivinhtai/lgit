@@ -53,16 +53,6 @@ def call_add():
                  "(or any of the parent directories)")
 
 
-def call_status():
-    """
-    call_status()   -> execute the lgit status command.
-    """
-    if find_repo() != "":
-        return execute_add(find_repo())
-    return print("fatal: not a git repository",
-                 "(or any of the parent directories)")
-
-
 def switch_command(command):
     """
     switch_command(command) ->  choose a command.
@@ -75,8 +65,7 @@ def switch_command(command):
 
     switcher = {
         'init': call_init,
-        'add': call_add,
-        'status': call_status
+        'add': call_add
     }
     try:
         func = switcher.get(command, None)
