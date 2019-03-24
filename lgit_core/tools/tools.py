@@ -14,10 +14,13 @@ Functions in this module:
     -   hash_file(file) -> hash file.
     -   get_timestamp(file) -> return timestamp of file.
     -   get_all_file(directory)  ->  find all the file in dir and subdir.
+    -   check_index(path_file, index_content) -> check if file had registred.
+    -   prepair_for_register(file, repo) -> return data for registering.
+    -   check_arg(args) ->  check all argument in args.
 """
 
 from os import path, open, close, write, O_RDWR, O_CREAT, fdopen, listdir, walk
-from os.path import join
+from os.path import join, exists
 from time import strftime, localtime
 from sys import argv
 from subprocess import run
@@ -203,3 +206,64 @@ def get_all_file(directory):
         files_list.extend([join(direc, file) for file in files])
     files_list = filter(lambda data: '/.lgit' not in data, files_list)
     return files_list
+
+
+def check_index(path_file, index_content):
+    """
+    check_index(path_file, index_content) -> check if file had registred.
+
+    This function check a file had already in index or not. Return False
+    if not, else return True and line index contain file.
+
+    Required argument:
+        path_file       --  path of file.
+        index_content   --  content of index file.
+    """
+    registered = False
+    index = -1
+    for line in index_content:
+        index += 1
+        if path_file in line:
+            registered = True
+            break
+    return registered, index
+
+
+def prepair_for_register(file, repo):
+    """
+    prepair_for_register(file, repo) -> return data for registering.
+
+    This function returns timestamp, hash, content in index file.
+
+    Required argument:
+        file    --  file name need to get timestamp, hash.
+        repo    --  path of repository.
+    """
+    full_path_file = get_full_path(file)
+    file_timestamp = get_timestamp(file)
+    path_file = full_path_file.replace(repo + "/", '')
+    index_content = read_file(repo + "/.lgit/index").split('\n')
+    if len(index_content) == 1 and index_content[0] == '':
+        index_content = []
+    return file_timestamp, path_file, index_content
+
+
+def check_arg(args, repo_path):
+    """
+    check_arg(args) ->  check all argument in args.
+
+    This function check all argument in args (list of arguments), if there
+    is an unvalid argument, return False.
+
+    Required argument:
+        args        --  list of arguments.
+        repo_path   --  path of lgit repository.
+    """
+    index = -1
+    for element in args:
+        index += 1
+        if repo_path not in get_full_path(element):
+            return index, False, 2
+        if not exists(get_full_path(element)):
+            return index, False, 1
+    return index, True, 0

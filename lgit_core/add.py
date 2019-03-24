@@ -7,8 +7,8 @@ File contents will be stored in the lgit database with thier SHA hash value.
 from os.path import exists
 from os import mkdir
 from .tools import (get_args, get_full_path, call_subprocess, get_file_type,
-                    add_content_file, get_hash, read_file, get_timestamp,
-                    get_all_file)
+                    add_content_file, get_hash, read_file, check_arg,
+                    get_all_file, check_index, prepair_for_register)
 
 
 def register_to_index(file, repo, hash_value):
@@ -20,35 +20,9 @@ def register_to_index(file, repo, hash_value):
         repo           --  the folder contain lgit database.
         hash_value     --  a hash value for register in index file.
     """
-
-    def check_index(path_file, index_content):
-        """
-        check_index(path_file, index_content) -> check if file had registred.
-
-        This function check a file had already in index or not. Return False
-        if not, else return True and line index contain file.
-
-        Required argument:
-            path_file       --  path of file.
-            index_content   --  content of index file.
-        """
-        registered = False
-        index = -1
-        for line in index_content:
-            index += 1
-            if path_file in line:
-                registered = True
-                break
-        return registered, index
-
-    full_path_file = get_full_path(file)
-    file_timestamp = get_timestamp(file)
-    path_file = full_path_file.replace(repo + "/", '')
-    index_content = read_file(repo + "/.lgit/index").split('\n')
-    if len(index_content) == 1 and index_content[0] == '':
-        index_content = []
-    registerd, index = check_index(path_file, index_content)
-    if not registerd:
+    file_timestamp, path_file, index_content = prepair_for_register(file, repo)
+    registered, index = check_index(path_file, index_content)
+    if not registered:
         index_content.append(file_timestamp + " " + hash_value + " " +
                              hash_value + " " * 42 + path_file)
     else:
@@ -121,26 +95,6 @@ def execute_add(repo_path):
     required argument:
         repo_path   --  path of lgit repository.
     """
-
-    def check_arg(args, repo_path):
-        """
-        check_arg(args) ->  check all argument in args.
-
-        This function check all argument in args (list of arguments), if there
-        is an unvalid argument, return False.
-
-        Required argument:
-            args        --  list of arguments.
-            repo_path   --  path of lgit repository.
-        """
-        index = -1
-        for element in args:
-            index += 1
-            if repo_path not in get_full_path(element):
-                return index, False, 2
-            if not exists(get_full_path(element)):
-                return index, False, 1
-        return index, True, 0
 
     doc = '/lgit-docs/Manual page lgit-add(1)'
     current_dir = get_args()[0][:len(get_args()[0]) - 8]
