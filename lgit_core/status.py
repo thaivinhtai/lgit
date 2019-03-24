@@ -60,9 +60,31 @@ def execute_status(repo_path):
             element = get_full_path[element]
             if get_file_type(element) == "file":
                 files.append(element)
-            if get_file_type(element) == "directoy":
+            elif get_file_type(element) == "directoy":
                 directories.append(element)
         return files, directories
+
+    def classify_status(files):
+        """
+        classify_status(files)  ->  returns lists of files have same status.
+
+        Required argument:
+            files   --  list of files.
+        """
+        untracked = []
+        commited = []
+        modified = []
+        added = []
+        for file in files:
+            if get_status(file, repo_path) == "untracked":
+                untracked.append(file)
+            elif get_status(file, repo_path) == "commited":
+                commited.append(file)
+            elif get_status(file, repo_path) == "modified":
+                modified.append(file)
+            elif get_status(file, repo_path) == "added":
+                added.append(file)
+    return untracked, commited, modified, added
 
     doc = '/lgit-docs/Manual page lgit-status(1)'
     current_dir = get_args()[0][:len(get_args()[0]) - 8]
@@ -82,4 +104,3 @@ def execute_status(repo_path):
     files, directories = classify_file(args)
     for element in directories:
         files += get_all_file(element)
-    
