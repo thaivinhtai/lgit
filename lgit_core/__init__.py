@@ -4,3 +4,8 @@ to develop."""
 
 from .init import execute_init
 from .add import execute_add
+from .status import execute_status
+from .log import execute_log
+from .rm import execute_rm
+from .config import execute_config
+from .commit import execute_commit
