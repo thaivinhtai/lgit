@@ -70,7 +70,7 @@ def switch_command(command):
     try:
         func = switcher.get(command, None)
         return func()
-    except TypeError:
+    except IndexError:
         print("lgit: '" + command + "' is not a lgit command.",
               "See 'lgit --help'.")
 

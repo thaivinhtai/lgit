@@ -53,9 +53,12 @@ def register_to_index(file, repo, hash):
         index_content.append(file_timestamp + " " + hash + " " +
                              hash + " " * 42 + path_file)
     else:
-        index_content[index].replace(index_content[index][:106],
-                                     (file_timestamp + " " + hash +
-                                      " " + hash))
+        index_content[index] = index_content[index].\
+                               replace(index_content[index][:96],
+                                       (file_timestamp + " " + hash +
+                                        " " + hash))
+    while "" in index_content:
+        index_content.remove("")
     content_to_write = ""
     for element in index_content:
         content_to_write += element + "\n"
@@ -150,7 +153,6 @@ def execute_add(repo_path):
             repo_path   --  path of lgit repository.
         """
         index = -1
-        print(repo_path)
         for element in args:
             index += 1
             if repo_path not in get_full_path(element):
