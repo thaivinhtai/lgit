@@ -25,7 +25,6 @@ def get_status(file, repo_path):
     registered, index = check_index(path_file, index_content)
     hash_value = get_hash(get_full_path(file))
     content_to_write = ""
-    print(registered)
     if not registered:
         return "untracked"
     index_content[index] = index_content[index].\
